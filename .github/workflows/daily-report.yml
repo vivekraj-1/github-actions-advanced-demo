@@ -2,7 +2,7 @@ name: Daily Report Generator
 
 on:
   schedule:
-    - cron: '* * * * *'  # Every day at 9 AM UTC
+    - cron: '* * * * *'  # Every minute for testing
   workflow_dispatch:       # Allow manual run
 
 jobs:
@@ -15,15 +15,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run report script
-        run: ./report.sh
+      - name: Show current directory contents
+        run: ls -la
+
+      - name: Print shell location and permissions
+        run: |
+          echo "Running report.sh"
+          bash -x report.sh
 
       - name: Upload report.txt as artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: daily-report
           path: report.txt
 
       - name: Notify via Slack
-        if: ${{ success() }}
-        run: echo "Slack notification would go here..."
+        if: success()
+        run: echo "✅ Slack notification would go here"
